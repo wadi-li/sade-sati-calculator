@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Калькулятор Саде Сати</title>
+<style>
+:root,[data-theme=light]{--bg:#f3f4f6;--pn:#ffffff;--ln:#dde1e8;--tx:#1f2430;--mu:#6b7385;--ac:#3f6fb0;--acT:#fff;--in:#fafbfc;--hl:#eef3fb;
+--c-norm:#a9cdb4;--c-p1:#e2b1ab;--c-p2:#c97f78;--c-p3:#dcaaa0;--c-exit:#e9d38c;--c-dh:#cdbb9c;--c-ev:#3f6fb0;--c-now:#1f2430;--c-tick:#8a92a3;--c-bg2:#eceff3}
+[data-theme=dark]{--bg:#14171e;--pn:#1c212c;--ln:#2e3545;--tx:#e3e7ef;--mu:#8e97ab;--ac:#7fa7de;--acT:#0d1420;--in:#121620;--hl:#243049;
+--c-norm:#4f7a5f;--c-p1:#8a5a57;--c-p2:#a5524c;--c-p3:#855650;--c-exit:#a8914a;--c-dh:#7a6a50;--c-ev:#7fa7de;--c-now:#e3e7ef;--c-tick:#6d768a;--c-bg2:#232938}
+*{box-sizing:border-box}body{margin:0;font:14px/1.45 system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx);transition:background .2s}
+.wrap{max-width:1150px;margin:auto;padding:16px}.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.top h1{flex:1;font-size:21px;margin:4px 0 12px}
+h2{font-size:16px;margin:14px 0 8px;color:var(--ac)}
+.pn{background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:14px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+label{display:block;font-size:12px;color:var(--mu);margin-bottom:3px}
+input,select,button,textarea{width:100%;padding:7px 8px;border-radius:6px;border:1px solid var(--ln);background:var(--in);color:var(--tx);font:inherit}
+input[readonly]{opacity:.75}
+button{background:var(--ac);color:var(--acT);font-weight:600;cursor:pointer;border:0}button.sec{background:var(--c-bg2);color:var(--tx);border:1px solid var(--ln)}
+button.sm{width:auto;padding:4px 10px;font-size:13px}
+.row{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.chk{display:flex;align-items:center;gap:6px;color:var(--tx);font-size:13px;margin:0}.chk input{width:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--ln);padding:5px 6px;text-align:left;vertical-align:middle}
+th{color:var(--mu);font-weight:500}tr.now td{background:var(--hl)}
+table.info td,table.info th{vertical-align:top;padding:7px 8px}table.info th{color:var(--tx);font-weight:600;background:var(--c-bg2)}table.info td:first-child{color:var(--mu)}
+.tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;color:#1f2430}
+.t-norm{background:var(--c-norm)}.t-p1{background:var(--c-p1)}.t-p2{background:var(--c-p2)}.t-p3{background:var(--c-p3)}.t-exit{background:var(--c-exit)}.t-dh{background:var(--c-dh)}.t-ev{background:var(--c-ev);color:#fff}
+[data-theme=dark] .tag{color:#f1f3f7}
+.warn{color:#b7791f}.bad{color:#b4534d}.ok{color:#3f8a5a}.mu{color:var(--mu)}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px}.big{font-size:18px;font-weight:600}
+.tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}.tabs button{width:auto;padding:6px 14px}
+.hide{display:none!important}small{color:var(--mu)}
+.tzbox{margin-top:10px;padding:8px 10px;border-radius:8px;background:var(--c-bg2);font-size:13px}
+.tip{position:relative;display:inline-block;cursor:help;outline:none}
+.tip.i{color:var(--ac);font-weight:700;margin-left:5px;width:17px;height:17px;line-height:15px;text-align:center;border:1px solid var(--ac);border-radius:50%;font-size:11px;font-style:normal}
+.tip .tipc{visibility:hidden;opacity:0;position:absolute;z-index:60;left:50%;top:calc(100% + 7px);transform:translateX(-50%);width:340px;max-width:82vw;background:var(--pn);color:var(--tx);
+border:1px solid var(--ln);border-radius:9px;padding:10px 12px;box-shadow:0 8px 28px rgba(0,0,0,.2);font-size:12.5px;font-weight:400;line-height:1.5;text-align:left;white-space:normal;transition:opacity .15s;pointer-events:none}
+.tip.l .tipc{left:0;transform:none}.tip.r .tipc{left:auto;right:0;transform:none}
+.tip:hover .tipc,.tip:focus .tipc{visibility:visible;opacity:1}.tipc b{color:var(--ac)}.tipc .mu{display:block;margin-top:5px;font-size:11.5px}
+.tip>.tag{border-bottom:1px dashed rgba(0,0,0,.35)}
+details.cyc{border:1px solid var(--ln);border-radius:8px;margin:10px 0;background:var(--in)}
+details.cyc>summary{cursor:pointer;padding:9px 12px;font-weight:600;list-style:none;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+details.cyc>summary::before{content:'▸';transition:.15s}details.cyc[open]>summary::before{transform:rotate(90deg)}
+details.cyc.now{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac) inset}
+.infob{padding:0 14px 12px}.infob ul{margin:6px 0 8px;padding-left:20px}.infob li{margin:3px 0}
+ul.tree{list-style:none;margin:0;padding:0 12px 10px 22px}ul.tree ul{list-style:none;margin:2px 0 4px 8px;padding-left:18px;border-left:2px solid var(--ln)}
+ul.tree li{position:relative;padding:3px 0}ul.tree ul>li::before{content:'';position:absolute;left:-18px;top:13px;width:14px;border-top:2px solid var(--ln)}
+.ev-in,.ev-out{font-weight:600}.ev-in::before{content:'▶ ';color:var(--c-p2)}.ev-out::before{content:'◀ ';color:#3f8a5a}
+.ph{font-weight:600}.int::before{content:'● ';color:var(--c-p2)}.ext{background:color-mix(in srgb,var(--c-exit) 30%,transparent);border-radius:5px;padding:2px 6px!important}
+.ext::before{content:'⤴ '}.away{color:var(--mu)}.away::before{content:'↺ '}.cur{outline:2px solid var(--ac);border-radius:5px}
+.evl{display:inline-block;min-width:20px;text-align:center;border-radius:10px;background:var(--c-ev);color:#fff;font-size:11px;padding:0 5px;margin-left:3px}
+#evt td input{padding:4px 6px}#evt td:first-child{width:36px;text-align:center;font-weight:600;color:var(--c-ev)}
+.diag{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}.diag svg{flex:1 1 560px;max-width:720px;width:100%;height:auto}
+.leg{flex:1 1 260px}.leg div{margin:3px 0}.sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+/* help */
+#help{line-height:1.6;font-size:14px}#help h2{font-size:18px;margin:26px 0 8px;padding-top:10px;border-top:1px solid var(--ln)}#help h2:first-of-type{border-top:0}
+#help h3{font-size:15px;margin:16px 0 6px}#help table{margin:6px 0 12px}#help td,#help th{vertical-align:top;padding:6px 8px}#help th{background:var(--c-bg2);color:var(--tx);font-weight:600}
+#help td:first-child{white-space:normal}#help ul,#help ol{padding-left:22px;margin:6px 0 10px}#help li{margin:3px 0}
+#help pre{background:var(--c-bg2);padding:10px 12px;border-radius:8px;overflow:auto;font-size:12.5px;line-height:1.45}
+#help .note{border-left:4px solid var(--ac);background:var(--hl);padding:8px 12px;border-radius:6px;margin:8px 0}
+#help .toc{columns:2;column-gap:30px;margin:6px 0 4px}#help .toc a{color:var(--ac);text-decoration:none}#help .toc a:hover{text-decoration:underline}
+#help .hsearch{max-width:360px;margin:6px 0 10px}#help mark{background:var(--c-exit);color:inherit;border-radius:3px}
+.totop{float:right;font-size:12px;color:var(--ac);text-decoration:none;font-weight:400}
+@media (max-width:640px){#help .toc{columns:1}}
+@media print{body.phelp .wrap>*:not(#help):not(.top){display:none!important}body.phelp .top button{display:none!important}body.phelp #help{display:block!important;border:0}body.phelp .toc a{color:#000}}
+</style><script type="text/javascript" nonce="91e33cd2232243309ada75b0c70" src="//local.adguard.org?ts=1790934275644&amp;type=content-script&amp;dmn=ppl-ai-code-interpreter-files.s3.amazonaws.com&amp;url=https%3A%2F%2Fppl-ai-code-interpreter-files.s3.amazonaws.com%2Fweb%2Fdirect-files%2Fe1d25135de130d6b3b8b1522d0d80118%2F007a012b-a412-4b59-be83-0e6ffb7046e3%2Fe7b3e7db.html%3FX-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Checksum-Mode%3DENABLED%26X-Amz-Credential%3DASIA2F3EMEYE4ERMFY4W%252F20261002%252Fus-east-1%252Fs3%252Faws4_request%26X-Amz-Date%3D20261002T103625Z%26X-Amz-Expires%3D3207%26X-Amz-Security-Token%3DIQoJb3JpZ2luX2VjEMv%252F%252F%252F%252F%252F%252F%252F%252F%252F%252FwEaCXVzLWVhc3QtMSJHMEUCIEAAtdLzBTjB6zw%252BWtnq8OM%252FVckVYXSdQ3%252Fn8DN33PuTAiEA0%252FL9FI6PdoYKZXP1u39ZmzXzvm3yW6HG0sdoCLZTrvMqiQUIk%252F%252F%252F%252F%252F%252F%252F%252F%252F%252F%252FARABGgw2OTk3NTMzMDk3MDUiDJlaFFI6t2LHuJ9XtirdBPyu3yOpqoXQM2LEvaOShPpc4BeaqphO8JxwOPaFTo5pKfHMysO1qX1MXlZQiWx1MHDlMAYubCaOuc0AvT6904hOZJP%252Bh1LMyRU4QBrL1aPFSQ55mCoIh99xKmWxSSxNxT7AdBk1LtJX4Xz5c%252BIeZIO9kUDQPZqIkcV8S2boNzFiT%252BvI2J6hXhrE6c7PZK%252FirPO92gAIak%252B4QR%252BNRoAIDMi9tvwfZvCdkmwCKMsUh2TeVRyKXljMKN4vRWVt0Xeus%252BiP6MtHSlPTn9yQ9lhyfwugVe2XZIwPpF7O8eGgFszqROsb3JvmOD3CRz9XetQZtA8kJ7D79HP6IG0Tcr%252BKXieM12Q50qKUSX%252FTQAmQVyl0vtQlMgVkkVBh4f9OBkr%252FVY2W%252Blz4XAYYOldvOWJz7Q6F9Cn69JfAyJOwOjkdvORAT2l4Wxf4XC73JgIcfmU2fxaqXEwFulJIMmibYtxFp677PI3PbFEH4LlRLLhk0WfMXAC%252FDQm4x%252FMtGDYtHX0jAKx0dE3nwP24QEACiGLQF3zbC1QDXUHE0QC%252FewCycvrrEERZrzrITgRroBgOgaoIs6s3jBveuL1JJTA24LoxojjKrDl31vHKYDHzAXcoIQUX713EyHRbRJaMNrhVwi7yVhrbhS1S7CAc1FdwyBHIRBPc6XNn6EDJbSBFuKrmCAvP7dMX2O8%252ByBkzaXde493gm18VLJzRHiZjvkWkGzL00Es35Y6NV8KKEO72IJufx5GfXS%252F4WqYGWotGQpby6BYCf%252F7ZadcHXXZ4CFvJzH0rb9My3nROIxuIPuJTAAS5MN2P%252FtUGOpgBKEF3bIWAh6JpcrbFfYyf5BGuVL9ZLZjObyTb%252BTT8ZC490%252BRCZvedzV9YvIfg7U203Ww79jLd%252FUx023560mj0ZJFtNRElAfHBVs6%252B6IeCmoxFLg42W8re6YV5%252BYw%252F4wIqQSPaR6LRso079JtTXChic6KX0PJJoIw2ywm7M8dvQpYE2I%252FUw6JFo8I1i2OhB4yVtFN%252FKLBI74o%253D%26X-Amz-SignedHeaders%3Dhost%26response-content-disposition%3Dattachment%253B%2520filename%253D%2522sade_sati_calculator.html%2522%253B%2520filename%252A%253DUTF-8%2527%2527sade_sati_calculator.html%26x-id%3DGetObject%26X-Amz-Signature%3D27b4aeac441e4a4f4f96daca2d39727aa26a1d86a632ca83ce8b2aa582fbe221&amp;app=comet.exe&amp;css=3&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1&amp;stealth=1&amp;st-loc&amp;st-flash&amp;st-dnt"></script><script type="text/javascript" nonce="91e33cd2232243309ada75b0c70" src="//local.adguard.org?ts=1790934275644&amp;name=AdGuard%20Extra&amp;name=AdGuard%20Popup%20Blocker&amp;type=user-script"></script></head><body><div class="wrap">
+<div class="top"><h1>Калькулятор Саде Сати <small>(джйотиш, сидерический зодиак)</small></h1>
+<button class="sec sm" id="save">💾 Сохранить в файл</button><button class="sec sm" id="loadb">📂 Загрузить</button><input type="file" id="loadf" accept=".json,application/json" class="hide">
+<button class="sec sm" id="theme">☾ Тёмная</button></div>
+<div class="tabs"><button id="tb1">По дате рождения</button><button id="tb2" class="sec">По знаку Луны</button><button id="tb3" class="sec">Все знаки сейчас</button><button id="tb4" class="sec">📖 Справка</button></div>
+
+<div class="pn" id="f1"><div class="grid">
+<div><label>Имя / метка</label><input id="nm" placeholder="необязательно"></div>
+<div><label>Дата рождения</label><input type="date" id="bd" value="1985-06-15"></div>
+<div><label>Время рождения (местное)</label><input type="time" id="bt" value="12:00"></div>
+<div><label>Город рождения</label><select id="city"></select></div>
+<div><label>Часовой пояс (IANA)</label><select id="zone"></select></div>
+<div><label>Смещение от UTC, ч</label><input type="number" id="tz" step="0.25" value="3"></div>
+<div><label>Горизонт, лет от рождения</label><input type="number" id="yrs" value="90" min="10" max="120"></div>
+</div><div class="row"><label class="chk"><input type="checkbox" id="tzon" checked> Автоопределение смещения UTC на момент рождения</label>
+<label class="chk"><input type="checkbox" id="tu"> Время рождения неизвестно</label></div>
+<div class="tzbox" id="tzinfo"></div></div>
+
+<div class="pn hide" id="f2"><div class="grid">
+<div><label>Знак Луны (сидерический)</label><select id="ms"></select></div>
+<div><label>С года</label><input type="number" id="y0" value="2000"></div>
+<div><label>По год</label><input type="number" id="y1" value="2080"></div></div></div>
+
+<div class="pn" id="fc"><div class="grid">
+<div><label>Айанамша</label><select id="ay">
+<option value="lahiri">Лахири (Читрапакша) — стандарт</option><option value="raman">Раман</option><option value="kp">Кришнамурти (KP)</option><option value="fagan">Фаган–Брэдли</option><option value="custom">Своя (градусы)</option><option value="tropical">Тропический</option></select></div>
+<div><label>Своя айанамша, °</label><input type="number" id="ayc" step="0.0001" value="24.1"></div>
+<div><label>Конец периода</label><select id="endm"><option value="final">Окончательный выход (после ретро)</option><option value="first">Первый выход из 2-го знака</option></select></div>
+<div><label>Доп. транзиты</label><span class="chk"><input type="checkbox" id="dh" checked><label for="dh" style="margin:0;color:var(--tx);font-size:13px">Дхайя (4-й и 8-й)</label><span id="dhtip"></span></span></div>
+<div><label>&nbsp;</label><button id="go">Рассчитать</button></div></div></div>
+
+<div class="pn" id="fev"><h2 style="margin-top:0">Ключевые события жизни</h2>
+<table id="evt"><thead><tr><th>№</th><th style="width:150px">С</th><th style="width:150px">По <small>(пусто = точка)</small></th><th>Описание</th><th style="width:240px">Период Сатурна</th><th style="width:40px"></th></tr></thead><tbody></tbody></table>
+<div class="row"><button class="sec sm" id="evadd">+ Добавить событие</button><button class="sec sm" id="evsort">Сортировать по дате</button><button class="sec sm" id="evclr">Очистить</button><small>Номера отображаются на диаграмме.</small></div></div>
+
+<div id="out"></div>
+
+<div class="pn hide" id="help">
+<h1 style="font-size:20px;margin:0 0 6px">📖 Инструкция пользователя</h1>
+<div class="note"><b>Важно.</b> Саде Сати и Дхайя — понятия ведической астрологии (джйотиш). У них нет научного подтверждения. Программа точно считает положения Луны и Сатурна, но толкования остаются астрологической традицией, а не прогнозом.</div>
+<div class="row" style="margin-top:6px"><input class="hsearch" id="hq" placeholder="🔍 Поиск по справке (например: айанамша, JSON, LMT)"><button class="sec sm" id="hprint">🖨 Печать справки</button></div>
+<div class="toc" id="toc">
+<div><a href="#h1">1. Что делает программа</a></div><div><a href="#h2">2. Запуск и требования</a></div><div><a href="#h3">3. Интерфейс</a></div>
+<div><a href="#h4">4. Режим «По дате рождения»</a></div><div><a href="#h5">5. Режим «По знаку Луны»</a></div><div><a href="#h6">6. Режим «Все знаки сейчас»</a></div>
+<div><a href="#h7">7. Настройки расчёта</a></div><div><a href="#h8">8. Таблица событий</a></div><div><a href="#h9">9. Как читать результаты</a></div>
+<div><a href="#h10">10. Круговая диаграмма</a></div><div><a href="#h11">11. Сохранение и экспорт</a></div><div><a href="#h12">12. Пример расчёта</a></div>
+<div><a href="#h13">13. Точность и ограничения</a></div><div><a href="#h14">14. Частые вопросы</a></div><div><a href="#h15">15. Словарь терминов</a></div></div>
+
+<section class="hs"><h2 id="h1">1. Что делает программа <a class="totop" href="#help">↑ наверх</a></h2>
+<ul><li><b>Знак Луны</b> на момент рождения, а также накшатра и пада.</li>
+<li>Все <b>периоды Саде Сати</b> на выбранный срок — примерно 7,5-летние отрезки, когда Сатурн проходит три знака вокруг натальной Луны. Для каждого периода показаны фазы, ретроградные петли и временные выходы.</li>
+<li>Периоды <b>Шани Дхайи</b> — Кантака Шани (4-й знак от Луны) и Аштама Шани (8-й знак от Луны), около 2,5 лет каждый.</li>
+<li><b>Текущее состояние</b> на сегодня: идёт ли Саде Сати или Дхайя, какая фаза, сколько осталось, когда следующий период.</li>
+<li>На что приходятся <b>ваши события жизни</b>: Саде Сати, временный выход, Дхайя или нормальный период.</li></ul>
+<p>Результаты показаны в виде иерархического дерева, таблиц и круговой диаграммы. Их можно выгрузить в CSV, SVG и PNG.</p></section>
+
+<section class="hs"><h2 id="h2">2. Запуск и требования <a class="totop" href="#help">↑ наверх</a></h2>
+<ul><li>Программа — один HTML-файл. Установка не нужна.</li>
+<li>Открывается в любом современном браузере: Chrome, Edge, Firefox, Safari, Яндекс Браузер. На телефоне тоже работает.</li>
+<li><b>Интернет не нужен.</b> Все расчёты, включая часовые пояса, выполняются в браузере.</li>
+<li>Данные автоматически сохраняются в памяти браузера (localStorage). Если открыть файл в другом браузере или на другом компьютере, данных там не будет — используйте сохранение в файл (раздел 11).</li></ul></section>
+
+<section class="hs"><h2 id="h3">3. Интерфейс <a class="totop" href="#help">↑ наверх</a></h2>
+<table><tr><th>Кнопка</th><th>Назначение</th></tr>
+<tr><td>💾 Сохранить в файл</td><td>Выгрузить все введённые данные в файл JSON</td></tr>
+<tr><td>📂 Загрузить</td><td>Восстановить данные из ранее сохранённого JSON</td></tr>
+<tr><td>☾ Тёмная / ☀ Светлая</td><td>Переключить тему оформления (запоминается)</td></tr></table>
+<table><tr><th>Вкладка</th><th>Когда использовать</th></tr>
+<tr><td>По дате рождения</td><td>Основной режим: известны дата, время и место рождения</td></tr>
+<tr><td>По знаку Луны</td><td>Знак Луны уже известен, или время рождения неизвестно и Луна в этот день сменила знак</td></tr>
+<tr><td>Все знаки сейчас</td><td>Быстрая сводка: у каких знаков Луны сейчас Саде Сати или Дхайя</td></tr>
+<tr><td>📖 Справка</td><td>Эта инструкция и словарь терминов. Работает без интернета</td></tr></table>
+<p><b>Подсказки.</b> Значок <span class="tip i">i</span> и метки с пунктирным подчёркиванием открывают пояснение при наведении курсора. На телефоне — при нажатии, с клавиатуры — клавишей Tab.</p></section>
+
+<section class="hs"><h2 id="h4">4. Режим «По дате рождения» <a class="totop" href="#help">↑ наверх</a></h2>
+<h3>4.1. Поля ввода</h3>
+<table><tr><th>Поле</th><th>Что вводить</th></tr>
+<tr><td>Имя / метка</td><td>Необязательно. Показывается в центре диаграммы и в имени файла JSON</td></tr>
+<tr><td>Дата рождения</td><td>День, месяц, год</td></tr>
+<tr><td>Время рождения (местное)</td><td>Время по часам в месте рождения — так, как записано в свидетельстве о рождении или со слов родителей</td></tr>
+<tr><td>Город рождения</td><td>Выбор из списка (по алфавиту). Часовой пояс подставится автоматически</td></tr>
+<tr><td>Часовой пояс (IANA)</td><td>Заполняется по городу. Если вашего города нет, выберите ближайший пояс, например <code>Europe/Moscow</code> или <code>Asia/Yekaterinburg</code></td></tr>
+<tr><td>Смещение от UTC, ч</td><td>При включённом автоопределении считается само (только для чтения). При выключенном вводится вручную</td></tr>
+<tr><td>Горизонт, лет</td><td>На сколько лет вперёд строить расчёт (по умолчанию 90)</td></tr></table>
+<h3>4.2. Флажки</h3>
+<ul><li><b>Автоопределение смещения UTC на момент рождения</b> (включено по умолчанию). Смещение берётся из встроенной в браузер базы часовых поясов с учётом летнего и декретного времени, действовавших именно в тот день. Если снять флажок, смещение вводится вручную.</li>
+<li><b>Время рождения неизвестно.</b> Расчёт идёт на 12:00. Программа проверяет, не сменила ли Луна знак в течение дня (см. 4.4).</li></ul>
+<h3>4.3. Строка часового пояса</h3>
+<p>Под формой выводится итог, например: <b>Москва · Europe/Moscow</b> · 16.07.1985 12:00 → <b>UTC+4:00</b> (летнее время).</p>
+<table><tr><th>Пометка</th><th>Значение</th></tr>
+<tr><td>стандартное время</td><td>Обычное (зимнее) время пояса</td></tr>
+<tr><td>летнее время</td><td>Часы были переведены вперёд</td></tr>
+<tr><td>местное среднее время (LMT)</td><td>Время до введения поясов (солнечное время города), например UTC+2:30:17 для Москвы в 1900 году</td></tr>
+<tr><td class="warn">Такого местного времени не существовало</td><td>Время рождения попало в час, пропущенный при переводе часов вперёд. Взято смещение до перевода — проверьте запись времени</td></tr>
+<tr><td class="warn">Неоднозначное время</td><td>Время попало в час, который при переводе часов назад повторялся дважды. Показаны оба смещения. Если нужно второе, отключите автоопределение и введите его вручную</td></tr>
+<tr><td>До 1970 г. …</td><td>Для старых дат история поясов отдельных городов может быть упрощена. Сверьтесь со справочником, если расчёт важен</td></tr></table>
+<h3>4.4. Предупреждения о Луне</h3>
+<ul><li><b>Луна у границы знака.</b> Луна меньше чем в 1° от края знака, а за час она проходит около 0,55°. Ошибка во времени рождения на указанное число часов может сменить знак.</li>
+<li><b>Время неизвестно, Луна сменила знак в этот день.</b> Знак нельзя определить однозначно — посчитайте оба варианта на вкладке «По знаку Луны».</li>
+<li><b>Весь день Луна была в одном знаке</b> — результат надёжен даже без времени рождения.</li></ul>
+<h3>4.5. Запуск расчёта</h3><p>Нажмите <b>«Рассчитать»</b>. При изменении таблицы событий пересчёт происходит сам через полсекунды.</p></section>
+
+<section class="hs"><h2 id="h5">5. Режим «По знаку Луны» <a class="totop" href="#help">↑ наверх</a></h2>
+<ol><li>Выберите <b>знак Луны</b> (сидерический, ведический).</li><li>Укажите диапазон <b>с года — по год</b>.</li><li>Нажмите <b>«Рассчитать»</b>.</li></ol>
+<p>Показываются те же блоки, что и в основном режиме, но без возраста. На диаграмме «12 часов» — 1 января начального года, засечки показывают календарные годы.</p></section>
+
+<section class="hs"><h2 id="h6">6. Режим «Все знаки сейчас» <a class="totop" href="#help">↑ наверх</a></h2>
+<p>Таблица из 12 строк, по одной на каждый знак Луны: <b>статус на сегодня</b> (нормальный, фаза Саде Сати, временный выход, Кантака или Аштама Шани) и <b>текущий или ближайший период</b> Саде Сати. Ниже есть справка по Шани Дхайе. Ввод данных рождения не нужен.</p></section>
+
+<section class="hs"><h2 id="h7">7. Настройки расчёта <a class="totop" href="#help">↑ наверх</a></h2>
+<table><tr><th>Настройка</th><th>Варианты и пояснение</th></tr>
+<tr><td>Айанамша</td><td><b>Лахири (Читрапакша)</b> — стандарт ведической астрологии, рекомендуется. Также доступны Раман, Кришнамурти (KP), Фаган–Брэдли, своё значение в градусах и тропический зодиак (западный, без айанамши)</td></tr>
+<tr><td>Своя айанамша, °</td><td>Используется, только если выбрано «Своя»</td></tr>
+<tr><td>Конец периода</td><td><b>Окончательный выход</b> — Саде Сати заканчивается, когда Сатурн покидает 2-й знак от Луны в последний раз, после всех ретроградных возвратов. <b>Первый выход из 2-го знака</b> — по первому пересечению границы. Школы расходятся, разница может доходить до полугода</td></tr>
+<tr><td>Дхайя (4-й и 8-й)</td><td>Включает расчёт Кантака и Аштама Шани: таблица, внутреннее кольцо диаграммы, справка</td></tr></table></section>
+
+<section class="hs"><h2 id="h8">8. Таблица ключевых событий жизни <a class="totop" href="#help">↑ наверх</a></h2>
+<table><tr><th>Столбец</th><th>Что вводить</th></tr>
+<tr><td>№</td><td>Ставится сам по порядку строк. Этот номер виден на диаграмме и в иерархии</td></tr>
+<tr><td>С</td><td>Дата начала события</td></tr>
+<tr><td>По</td><td>Дата окончания. <b>Оставьте пустым</b>, если событие одномоментное (переезд, свадьба, рождение ребёнка)</td></tr>
+<tr><td>Описание</td><td>Произвольный текст</td></tr>
+<tr><td>Период Сатурна</td><td>Заполняется автоматически: на что пришлось событие. Для событий с периодом указаны доли, например «Саде Сати №1: 2-я фаза · 60 %», «Нормальный период · 40 %»</td></tr></table>
+<p><b>Кнопки:</b> «+ Добавить событие», «Сортировать по дате», «Очистить» (с подтверждением), ✕ — удалить строку. При первом запуске в таблице есть три демо-события — удалите их или замените своими.</p></section>
+
+<section class="hs"><h2 id="h9">9. Как читать результаты <a class="totop" href="#help">↑ наверх</a></h2>
+<h3>9.1. Сводка</h3>
+<p>Момент рождения в UTC и применённое смещение, положение Луны (градусы и знак), знак Луны (раши), накшатра и пада, Сатурн при рождении и сейчас (℞ — ретроградный), значение айанамши. Ниже — <b>статус на сегодня</b>: «Саде Сати идёт сейчас» (фаза, даты, сколько осталось), «Сейчас Саде Сати нет» (следующий период), «Сейчас также идёт Кантака / Аштама Шани…».</p>
+<h3>9.2. Иерархия периодов Саде Сати</h3>
+<p>Каждый период — сворачиваемый блок. Текущий период раскрыт и выделен рамкой.</p>
+<pre>Саде Сати №1: 24.01.2020 — 23.02.2028  [8 г. 1 мес.] [временных выходов: 1] [идёт сейчас] ③
+├ ▶ Вход в Саде Сати: 24.01.2020 — Сатурн входит в Макару
+├ 1-я фаза (Вирайя) · Макара · в знаке 2 г. 9 мес. · интервалов: 2
+│  ├ ● Интервал 1
+│  ├ ↺ Переход во 2-ю фазу …
+│  └ ● Интервал 2 (Сатурн ретроградно вернулся)
+├ 2-я фаза (Джанма, пик) · Кумбха …
+├ 3-я фаза (Вааку) · Мина
+│  ├ ● Интервал 1
+│  ├ ⤴ Временный выход: 03.06.2027 → возврат 19.10.2027
+│  └ ● Интервал 2
+├ ◀ Выход из Саде Сати: 23.02.2028
+└ Общая длительность · чистое время в трёх знаках</pre>
+<table><tr><th>Значок</th><th>Значение</th></tr>
+<tr><td>▶</td><td>Вход в Саде Сати: Сатурн впервые входит в 12-й знак от Луны</td></tr>
+<tr><td>●</td><td>Интервал пребывания Сатурна в знаке данной фазы</td></tr>
+<tr><td>↺</td><td>Ретро-откат в предыдущую фазу или переход в следующую, после которого Сатурн вернулся</td></tr>
+<tr><td><span class="tag t-exit">⤴</span></td><td>Временный выход: Сатурн ретроградно покинул все три знака Саде Сати и затем вернулся</td></tr>
+<tr><td>◀</td><td>Окончательный выход из Саде Сати</td></tr>
+<tr><td>℞</td><td>Выход из знака при ретроградном движении</td></tr>
+<tr><td><span class="evl">3</span></td><td>Номер события из вашей таблицы, попавшего в этот отрезок</td></tr>
+<tr><td>Рамка вокруг строки</td><td>Текущий момент приходится на этот интервал</td></tr></table>
+<p><b>«Общая длительность»</b> — от входа до выхода. <b>«Чистое время в трёх знаках»</b> — без временных выходов.</p>
+<h3>9.3. Таблица Шани Дхайи</h3>
+<p>Тип (с подсказкой при наведении), знак Сатурна, даты, длительность, сферы по трактовкам, номера ваших событий. Ниже — блок «Справка: что такое Шани Дхайя» с таблицей «Два вида Дхайи».</p></section>
+
+<section class="hs"><h2 id="h10">10. Круговая диаграмма жизни <a class="totop" href="#help">↑ наверх</a></h2>
+<ul><li><b>Стрелка на 12 часов</b> — рождение (или начало диапазона). Время идёт <b>по часовой стрелке</b>, полный круг равен горизонту расчёта.</li>
+<li><b>Засечки</b> — возраст (или годы), подписи через каждые 10 лет.</li><li><b>Линия «сейчас»</b> — текущий момент.</li></ul>
+<table><tr><th>Элемент</th><th>Цвет</th></tr>
+<tr><td>Нормальный период</td><td><span class="sw" style="background:var(--c-norm)"></span>спокойный зелёный</td></tr>
+<tr><td>Саде Сати — 1-я / 2-я (пик) / 3-я фаза</td><td><span class="sw" style="background:var(--c-p1)"></span><span class="sw" style="background:var(--c-p2)"></span><span class="sw" style="background:var(--c-p3)"></span>три оттенка терракотового, пик темнее</td></tr>
+<tr><td>Временный выход</td><td><span class="sw" style="background:var(--c-exit)"></span>песочно-жёлтый</td></tr>
+<tr><td>Шани Дхайя</td><td><span class="sw" style="background:var(--c-dh)"></span>внутреннее тонкое кольцо, бежевое</td></tr>
+<tr><td>События пользователя</td><td><span class="sw" style="background:var(--c-ev);border-radius:50%"></span>синие кружки с номерами; период — синяя дуга; если события накладываются, они уходят на следующий уровень</td></tr></table>
+<p>В центре — имя, знак Луны и доля жизни в пределах горизонта, приходящаяся на Саде Сати. <b>Наведите курсор</b> на сектор или метку, чтобы увидеть даты и описание. Кнопки «Скачать SVG» и «Скачать PNG» сохраняют диаграмму в текущей теме.</p></section>
+
+<section class="hs"><h2 id="h11">11. Сохранение, загрузка и экспорт <a class="totop" href="#help">↑ наверх</a></h2>
+<table><tr><th>Действие</th><th>Как</th><th>Что сохраняется</th></tr>
+<tr><td>Автосохранение</td><td>Само при каждом изменении</td><td>Все поля, события, режим, тема — в памяти браузера</td></tr>
+<tr><td>Сохранить в файл</td><td>💾 в шапке</td><td>JSON-файл вида <code>Имя_2026-09-28.json</code></td></tr>
+<tr><td>Загрузить</td><td>📂 в шапке → выбрать JSON</td><td>Всё восстанавливается, включая события и тему</td></tr>
+<tr><td>CSV</td><td>«Скачать CSV» под результатами</td><td>Периоды, фазы, события. Разделитель <code>;</code>, UTF-8, Excel открывает корректно</td></tr>
+<tr><td>SVG / PNG</td><td>Кнопки у диаграммы</td><td>Изображение диаграммы</td></tr></table>
+<p><b>Совет.</b> Храните отдельный JSON для каждого человека. Файлы старых версий загружаются; в них смещение UTC остаётся введённым вручную, автоопределение можно включить флажком.</p></section>
+
+<section class="hs"><h2 id="h12">12. Пример: пошаговый расчёт <a class="totop" href="#help">↑ наверх</a></h2>
+<ol><li>Вкладка <b>«По дате рождения»</b>.</li><li>Имя: <code>Иван</code>. Дата: <code>16.07.1985</code>. Время: <code>12:00</code>.</li>
+<li>Город: <b>Москва</b> → строка пояса показывает «UTC+4:00 (летнее время)».</li>
+<li>Айанамша <b>Лахири</b>, конец периода <b>«Окончательный выход»</b>, флажок <b>Дхайя</b> включён.</li>
+<li>Добавьте события: «Учёба в университете» 01.09.2003–30.06.2008, «Переезд» 20.05.2010.</li>
+<li>Нажмите <b>«Рассчитать»</b>.</li><li>Посмотрите знак Луны и статус на сегодня, затем диаграмму с номерами событий. Раскройте нужный цикл в иерархии.</li>
+<li>Нажмите <b>💾 Сохранить в файл</b>.</li></ol></section>
+
+<section class="hs"><h2 id="h13">13. Точность и ограничения <a class="totop" href="#help">↑ наверх</a></h2>
+<table><tr><th>Параметр</th><th>Значение</th></tr>
+<tr><td>Положение Луны</td><td>≈ 1–3 угловые минуты (упрощённая теория с 12 поправками)</td></tr>
+<tr><td>Положение Сатурна</td><td>≈ 1–2′ (с учётом возмущений от Юпитера)</td></tr>
+<tr><td>Даты смены знаков Сатурном</td><td>Обычно в пределах суток. Когда Сатурн почти стоит на месте перед разворотом — до нескольких дней</td></tr>
+<tr><td>Рекомендуемый диапазон дат</td><td>1900–2100</td></tr>
+<tr><td>Часовые пояса</td><td>База IANA (tzdata), встроенная в браузер. До 1970 года история по отдельным городам может быть упрощена. Украинские города (Харьков, Одесса, Днепр, Львов, Запорожье) входят в пояс Europe/Kyiv — около 1990–1992 годов местная практика могла отличаться</td></tr>
+<tr><td>Айанамша</td><td>Средняя, без учёта нутации (отличие меньше 0,005°)</td></tr></table>
+<p>Если важна точность до часов, сверяйте ключевые даты с профессиональной программой джйотиш (Swiss Ephemeris).</p></section>
+
+<section class="hs"><h2 id="h14">14. Частые вопросы <a class="totop" href="#help">↑ наверх</a></h2>
+<p><b>Знак Луны не совпадает с «моим знаком зодиака».</b><br>Обычный знак из гороскопов — знак Солнца в тропическом (западном) зодиаке. Здесь — знак <b>Луны</b> в <b>сидерическом</b> зодиаке. Это другая величина.</p>
+<p><b>Результат отличается от другого сайта.</b><br>Проверьте айанамшу (почти везде Лахири), правило конца периода и смещение UTC. Чаще всего расхождение связано с часовым поясом или летним временем.</p>
+<p><b>Смещение UTC кажется неверным.</b><br>Отключите «Автоопределение» и введите смещение вручную по справочнику. Для СССР учитывайте декретное время (+1 ч к поясному) и летнее время с 1981 года.</p>
+<p><b>Не знаю время рождения.</b><br>Отметьте «Время рождения неизвестно». Если Луна в тот день сменила знак, посчитайте оба знака на вкладке «По знаку Луны».</p>
+<p><b>Пропали данные.</b><br>Скорее всего, открыт другой браузер, режим «инкогнито» или очищена история. Загрузите сохранённый JSON.</p>
+<p><b>Подсказки не появляются на телефоне.</b><br>Коснитесь значка ⓘ или метки. Чтобы закрыть — коснитесь в другом месте.</p></section>
+
+<section class="hs"><h2 id="h15">15. Словарь терминов <a class="totop" href="#help">↑ наверх</a></h2>
+<h3>Основные понятия</h3>
+<table><tr><th style="width:190px">Термин</th><th>Расшифровка</th></tr>
+<tr><td><b>Джйотиш</b></td><td>Ведическая (индийская) астрология</td></tr>
+<tr><td><b>Саде Сати</b></td><td>«Семь с половиной» (санскр. <i>саде</i> — «половина», <i>сати</i> — «семь»). Период около 7,5 лет, когда Сатурн по транзиту проходит 12-й знак от натальной Луны, знак Луны и 2-й знак от неё. Повторяется примерно раз в 30 лет, за жизнь обычно 2–3 раза</td></tr>
+<tr><td><b>Шани</b></td><td>Сатурн на санскрите и хинди</td></tr>
+<tr><td><b>Шани Дхайя</b></td><td>«Дхайя» — «два с половиной» (хинди). Транзит Сатурна по 4-му или 8-му знаку от Луны, около 2,5 лет. Короче и мягче Саде Сати</td></tr>
+<tr><td><b>Кантака Шани</b></td><td>«Сатурн-шип», «заноза». Сатурн в 4-м знаке от Луны. Сферы по трактовкам: дом, мать, недвижимость, транспорт, внутренний покой. Другие названия: Ардхаштама Шани, Малое Паноти. В некоторых школах так называют и транзиты по 7-му и 10-му знакам</td></tr>
+<tr><td><b>Аштама Шани</b></td><td>«Восьмой Сатурн». Сатурн в 8-м знаке от Луны. Сферы по трактовкам: скрытое, внезапные перемены, наследство, здоровье, трансформация. Считается тяжелее Кантаки</td></tr>
+<tr><td><b>Ардхаштама Шани</b></td><td>«Половина восьми» — другое название Кантака Шани</td></tr>
+<tr><td><b>Паноти</b></td><td>Народное название неблагоприятного периода Сатурна. «Малое Паноти» — Дхайя</td></tr>
+<tr><td><b>Дустхана</b></td><td>«Трудные» дома гороскопа: 6-й, 8-й и 12-й. 8-й считается самым тяжёлым</td></tr></table>
+<h3>Фазы Саде Сати</h3>
+<table><tr><th style="width:190px">Термин</th><th>Расшифровка</th></tr>
+<tr><td><b>1-я фаза — Вирайя Шани</b></td><td>Сатурн в 12-м знаке от Луны (знак перед Луной). По трактовкам — расходы, уход в себя, переоценка</td></tr>
+<tr><td><b>2-я фаза — Джанма Шани</b></td><td>Сатурн в знаке самой Луны (<i>джанма</i> — «рождение»). Пик периода, наибольшая нагрузка по трактовкам</td></tr>
+<tr><td><b>3-я фаза — Вааку Шани</b></td><td>Сатурн во 2-м знаке от Луны. По трактовкам — семья, деньги, речь, подведение итогов</td></tr>
+<tr><td><b>Временный выход</b></td><td>Термин программы. Сатурн при ретроградном движении покидает все три знака Саде Сати и затем возвращается. Такой перерыв считается частью того же периода</td></tr>
+<tr><td><b>Ретро-откат</b></td><td>Возврат Сатурна из текущей фазы в знак предыдущей фазы</td></tr>
+<tr><td><b>Окончательный выход</b></td><td>Последний выход Сатурна из 2-го знака от Луны, после которого он уже не возвращается</td></tr></table>
+<h3>Астрономия и астрология</h3>
+<table><tr><th style="width:190px">Термин</th><th>Расшифровка</th></tr>
+<tr><td><b>Натальная Луна</b></td><td>Положение Луны в момент рождения</td></tr>
+<tr><td><b>Раши</b></td><td>Знак зодиака в джйотиш. Здесь — знак Луны</td></tr>
+<tr><td><b>Транзит</b></td><td>Текущее движение планеты по знакам относительно натальной карты</td></tr>
+<tr><td><b>Ингрессия</b></td><td>Момент входа планеты в новый знак</td></tr>
+<tr><td><b>Ретроградность (℞)</b></td><td>Кажущееся попятное движение планеты при наблюдении с Земли. Сатурн бывает ретроградным около 4,5 месяцев в году, поэтому может несколько раз пересекать одну границу знака</td></tr>
+<tr><td><b>Станция</b></td><td>Момент, когда планета кажется остановившейся перед сменой направления</td></tr>
+<tr><td><b>Тропический зодиак</b></td><td>Западная система: знаки привязаны к точке весеннего равноденствия</td></tr>
+<tr><td><b>Сидерический зодиак</b></td><td>Ведическая система: знаки привязаны к звёздам. Сейчас смещён относительно тропического примерно на 24°</td></tr>
+<tr><td><b>Айанамша</b></td><td>Величина этого смещения в градусах. Растёт примерно на 1° за 72 года из-за прецессии</td></tr>
+<tr><td><b>Лахири (Читрапакша)</b></td><td>Официальная айанамша Индии, стандарт джйотиш. Привязана к звезде Спика (Читра)</td></tr>
+<tr><td><b>Раман, KP, Фаган–Брэдли</b></td><td>Альтернативные айанамши, отличаются от Лахири на доли градуса и более чем на 1°. KP — школа Кришнамурти, Фаган–Брэдли — западная сидерическая астрология</td></tr>
+<tr><td><b>Прецессия</b></td><td>Медленный поворот земной оси, из-за которого точка равноденствия смещается относительно звёзд (≈50″ в год)</td></tr>
+<tr><td><b>Нутация</b></td><td>Мелкие колебания земной оси поверх прецессии (до ~17″). Программа их не учитывает</td></tr>
+<tr><td><b>Накшатра</b></td><td>Лунная стоянка. Зодиак делится на 27 частей по 13°20′</td></tr>
+<tr><td><b>Пада</b></td><td>Четверть накшатры (3°20′). Всего 108 пад</td></tr>
+<tr><td><b>Куспид</b></td><td>Граница между знаками</td></tr>
+<tr><td><b>Кармическая проверка</b></td><td>Толкование Саде Сати как времени дисциплины и переоценки, а не наказания</td></tr></table>
+<h3>Время и часовые пояса</h3>
+<table><tr><th style="width:190px">Термин</th><th>Расшифровка</th></tr>
+<tr><td><b>UTC</b></td><td>Всемирное координированное время — точка отсчёта для всех часовых поясов</td></tr>
+<tr><td><b>Смещение от UTC</b></td><td>Разница местного времени с UTC, например +3 для Москвы сейчас и +4 для Москвы летом 1985 года</td></tr>
+<tr><td><b>IANA / tzdata</b></td><td>Международная база часовых поясов с историей переходов. Встроена во все браузеры и ОС. Названия вида <code>Europe/Moscow</code></td></tr>
+<tr><td><b>Летнее время</b></td><td>Сезонный перевод часов на 1 час вперёд</td></tr>
+<tr><td><b>Декретное время</b></td><td>В СССР с 1930 года часы были постоянно переведены на 1 час вперёд относительно поясного времени</td></tr>
+<tr><td><b>LMT</b></td><td>Local Mean Time — местное среднее солнечное время, которое использовалось до введения поясов (в России до 1919–1924 годов)</td></tr>
+<tr><td><b>Юлианская дата (JD)</b></td><td>Непрерывный счёт суток, принятый в астрономии. Используется внутри программы</td></tr></table>
+<h3>Файлы и форматы</h3>
+<table><tr><th style="width:190px">Термин</th><th>Расшифровка</th></tr>
+<tr><td><b>HTML</b></td><td>Формат веб-страницы. Сама программа — один HTML-файл</td></tr>
+<tr><td><b>localStorage</b></td><td>Встроенное хранилище браузера, где сохраняются ваши данные</td></tr>
+<tr><td><b>JSON</b></td><td>Текстовый формат файла сохранения; открывается блокнотом</td></tr>
+<tr><td><b>CSV</b></td><td>Таблица в текстовом виде для Excel или LibreOffice</td></tr>
+<tr><td><b>SVG</b></td><td>Векторное изображение: масштабируется без потери качества, подходит для печати</td></tr>
+<tr><td><b>PNG</b></td><td>Растровое изображение для просмотра и пересылки</td></tr></table></section>
+<p id="hnone" class="mu hide">Ничего не найдено.</p>
+<p><small>Расчёты выполняются локально в браузере. Интерпретации периодов — астрологическая традиция, а не научный прогноз.</small></p>
+</div>
+<div class="pn" id="foot"><small>Модель: орбитальные элементы Schlyter + основные возмущения (Луна — 12 членов, Сатурн — великое неравенство). Точность: Луна ≈ 1–3′, ингрессии Сатурна — обычно в пределах суток. Диапазон 1900–2100 гг. Смещение UTC — встроенная в браузер база IANA (tzdata). Данные сохраняются в браузере (localStorage); JSON — для переноса. Подробности — вкладка «📖 Справка». Астрологический расчёт, не научный прогноз.</small></div>
+</div>
+<script>
+
+const RAD=Math.PI/180, DEG=180/Math.PI;
+const norm=x=>((x%360)+360)%360;
+const S=x=>Math.sin(x*RAD), C=x=>Math.cos(x*RAD);
+const atan2d=(y,x)=>Math.atan2(y,x)*DEG;
+function kepler(M,e){M=norm(M);let E=M+DEG*e*S(M)*(1+e*C(M));for(let k=0;k<30;k++){const dE=(E-DEG*e*S(E)-M)/(1-e*C(E));E-=dE;if(Math.abs(dE)<1e-10)break;}return E;}
+function orbit(N,i,w,a,e,M){const E=kepler(M,e);const xv=a*(C(E)-e),yv=a*Math.sqrt(1-e*e)*S(E);const v=atan2d(yv,xv),r=Math.hypot(xv,yv);const u=v+w;
+return{x:r*(C(N)*C(u)-S(N)*S(u)*C(i)),y:r*(S(N)*C(u)+C(N)*S(u)*C(i)),z:r*S(u)*S(i),r};}
+function sun(d){const w=282.9404+4.70935e-5*d,e=0.016709-1.151e-9*d,M=356.0470+0.9856002585*d;const E=kepler(M,e);const xv=C(E)-e,yv=Math.sqrt(1-e*e)*S(E);const v=atan2d(yv,xv),r=Math.hypot(xv,yv);const lon=norm(v+w);return{lon,r,x:r*C(lon),y:r*S(lon),M:norm(M),L:norm(w+M)};}
+function moonTrop(d){const N=125.1228-0.0529538083*d,w=318.0634+0.1643573223*d,M=115.3654+13.0649929509*d;const p=orbit(N,5.1454,w,60.2666,0.0549,M);let lon=atan2d(p.y,p.x);
+const s=sun(d),Ms=s.M,Mm=norm(M),Lm=norm(N+w+M),D=Lm-s.L,F=Lm-N;
+lon+=-1.274*S(Mm-2*D)+0.658*S(2*D)-0.186*S(Ms)-0.059*S(2*Mm-2*D)-0.057*S(Mm-2*D+Ms)+0.053*S(Mm+2*D)+0.046*S(2*D-Ms)+0.041*S(Mm-Ms)-0.035*S(D)-0.031*S(Mm+Ms)-0.015*S(2*F-2*D)+0.011*S(Mm-4*D);
+return norm(lon);}
+function saturnTrop(d){const Mj=19.8950+0.0830853001*d,Ms=316.9670+0.0334442282*d;
+const p=orbit(113.6634+2.3898e-5*d,2.4886-1.081e-7*d,339.3939+2.97661e-5*d,9.55475,0.055546,Ms);
+let lon=atan2d(p.y,p.x),lat=Math.asin(p.z/p.r)*DEG;
+lon+=0.812*S(2*Mj-5*Ms-67.6)-0.229*C(2*Mj-4*Ms-2)+0.119*S(Mj-2*Ms-3)+0.046*S(2*Mj-6*Ms-69)+0.014*S(Mj-3*Ms+32);
+lat+=-0.020*C(2*Mj-4*Ms-2)+0.018*S(2*Mj-6*Ms-49);
+const x=p.r*C(lat)*C(lon),y=p.r*C(lat)*S(lon);const s=sun(d);return norm(atan2d(y+s.y,x+s.x));}
+const AYAN={lahiri:23.85292,raman:22.41055,kp:23.76236,fagan:24.73603};
+function ayan(jd,mode,custom){if(mode==='tropical')return 0;if(mode==='custom')return custom;const T=(jd-2451545)/36525;return AYAN[mode]+1.396971*T+0.000309*T*T;}
+const jdOf=ms=>ms/86400000+2440587.5, msOf=jd=>(jd-2440587.5)*86400000;
+const dOf=jd=>jd-2451543.5;
+function moonSid(jd,m,c){return norm(moonTrop(dOf(jd))-ayan(jd,m,c));}
+function satSid(jd,m,c){return norm(saturnTrop(dOf(jd))-ayan(jd,m,c));}
+function satSign(jd,m,c){return Math.floor(satSid(jd,m,c)/30);}
+function saturnSegments(jd0,jd1,m,c){const step=2;let segs=[],cur=satSign(jd0,m,c),start=jd0,prev=jd0;
+for(let jd=jd0+step;jd<=jd1+step;jd+=step){const t=Math.min(jd,jd1);const sg=satSign(t,m,c);if(sg!==cur){let a=prev,b=t;for(let k=0;k<40;k++){const mid=(a+b)/2;if(satSign(mid,m,c)===cur)a=mid;else b=mid;}
+const ing=(a+b)/2;const dl=satSid(ing+1,m,c)-satSid(ing-1,m,c);const back=((dl+540)%360-180)<0;segs.push({sign:cur,start,end:ing,exitRetro:back});cur=sg;start=ing;}
+prev=t;if(t>=jd1)break;}
+segs.push({sign:cur,start,end:jd1,open:true});return segs;}
+
+function zoneOk(z){try{new Intl.DateTimeFormat('en-US',{timeZone:z});return true;}catch(e){return false;}}
+const KYIV=zoneOk('Europe/Kyiv')?'Europe/Kyiv':'Europe/Kiev';
+const DEVZ=(()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'UTC';}catch(e){return 'UTC';}})();
+const CITIES=[['Алматы','Asia/Almaty'],['Астана','Asia/Almaty'],['Астрахань','Europe/Astrakhan'],['Баку','Asia/Baku'],['Барнаул','Asia/Barnaul'],['Белград','Europe/Belgrade'],['Берлин','Europe/Berlin'],['Бишкек','Asia/Bishkek'],
+['Варшава','Europe/Warsaw'],['Вильнюс','Europe/Vilnius'],['Владивосток','Asia/Vladivostok'],['Волгоград','Europe/Volgograd'],['Днепр',KYIV],['Душанбе','Asia/Dushanbe'],['Екатеринбург','Asia/Yekaterinburg'],['Ереван','Asia/Yerevan'],
+['Запорожье',KYIV],['Иркутск','Asia/Irkutsk'],['Казань','Europe/Moscow'],['Калининград','Europe/Kaliningrad'],['Кемерово','Asia/Novokuznetsk'],['Киев',KYIV],['Кишинёв','Europe/Chisinau'],['Краснодар','Europe/Moscow'],['Красноярск','Asia/Krasnoyarsk'],
+['Лондон','Europe/London'],['Львов',KYIV],['Магадан','Asia/Magadan'],['Минск','Europe/Minsk'],['Москва','Europe/Moscow'],['Мурманск','Europe/Moscow'],['Нижний Новгород','Europe/Moscow'],['Новокузнецк','Asia/Novokuznetsk'],['Новосибирск','Asia/Novosibirsk'],
+['Нью-Йорк','America/New_York'],['Одесса',KYIV],['Омск','Asia/Omsk'],['Париж','Europe/Paris'],['Пермь','Asia/Yekaterinburg'],['Петропавловск-Камчатский','Asia/Kamchatka'],['Прага','Europe/Prague'],['Рига','Europe/Riga'],['Ростов-на-Дону','Europe/Moscow'],
+['Самара','Europe/Samara'],['Санкт-Петербург','Europe/Moscow'],['Саратов','Europe/Saratov'],['Симферополь','Europe/Simferopol'],['Стокгольм','Europe/Stockholm'],['Таллин','Europe/Tallinn'],['Ташкент','Asia/Tashkent'],['Тбилиси','Asia/Tbilisi'],['Томск','Asia/Tomsk'],
+['Тюмень','Asia/Yekaterinburg'],['Ульяновск','Europe/Ulyanovsk'],['Уфа','Asia/Yekaterinburg'],['Хабаровск','Asia/Vladivostok'],['Харьков',KYIV],['Хельсинки','Europe/Helsinki'],['Челябинск','Asia/Yekaterinburg'],['Чита','Asia/Chita'],
+['Южно-Сахалинск','Asia/Sakhalin'],['Якутск','Asia/Yakutsk']].filter(c=>zoneOk(c[1])).sort((a,b)=>a[0].localeCompare(b[0],'ru'));
+const CITYZ=Object.fromEntries(CITIES);
+const _dtf={};
+function tzOffMin(zone,ms){const f=_dtf[zone]||(_dtf[zone]=new Intl.DateTimeFormat('en-US',{timeZone:zone,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}));
+const p={};f.formatToParts(new Date(ms)).forEach(x=>p[x.type]=x.value);const loc=Date.UTC(+p.year,+p.month-1,+p.day,(+p.hour)%24,+p.minute,+p.second);return (loc-Math.floor(ms/1000)*1000)/60000;}
+function resolveOffset(zone,localMs){const cand=[...new Set([tzOffMin(zone,localMs-864e5),tzOffMin(zone,localMs),tzOffMin(zone,localMs+864e5)])];
+const valid=cand.filter(o=>Math.abs(tzOffMin(zone,localMs-o*6e4)-o)<1e-6).sort((a,b)=>b-a);
+if(valid.length===1)return{off:valid[0],flag:''};
+if(valid.length>1)return{off:valid[0],flag:'amb',alt:valid[valid.length-1]};
+return{off:tzOffMin(zone,localMs-864e5),flag:'gap'};}
+function fmtOff(min){const s=min<0?'−':'+';min=Math.abs(min);const h=Math.floor(min/60),m=Math.floor(min%60),sec=Math.round((min*60)%60);return `UTC${s}${h}:${String(m).padStart(2,'0')}${sec?':'+String(sec).padStart(2,'0'):''}`;}
+function fillTZ(){const cs=$('city');cs.innerHTML=`<option value="">— вручную / другой пояс —</option>`+CITIES.map(c=>`<option value="${c[0]}">${c[0]}</option>`).join('');
+let zs=[];try{zs=Intl.supportedValuesOf('timeZone');}catch(e){}zs=[...new Set([...zs,...CITIES.map(c=>c[1]),DEVZ,'UTC'])].filter(zoneOk).sort();
+$('zone').innerHTML=zs.map(z=>`<option value="${z}">${z}${z===DEVZ?' (это устройство)':''}</option>`).join('');$('zone').value=DEVZ;}
+function updateTZ(){const auto=$('tzon').checked;$('tz').readOnly=auto;$('zone').disabled=!auto;$('city').disabled=!auto;const box=$('tzinfo');
+if(!auto){box.innerHTML='Смещение вводится вручную. Учтите летнее/декретное время на момент рождения.';return;}
+const bd=$('bd').value;if(!bd){box.innerHTML='Укажите дату рождения.';return;}const zone=$('zone').value||DEVZ;
+const [y,mo,d]=bd.split('-').map(Number);const [h,mi]=(($('tu').checked?'':$('bt').value)||'12:00').split(':').map(Number);const L=Date.UTC(y,mo-1,d,h,mi);
+let r;try{r=resolveOffset(zone,L);}catch(e){box.innerHTML='<span class="bad">Ошибка базы часовых поясов браузера: '+esc(e.message)+'</span>';return;}
+$('tz').value=+(r.off/60).toFixed(6);
+const jan=tzOffMin(zone,Date.UTC(y,0,15)),jul=tzOffMin(zone,Date.UTC(y,6,15)),std=Math.min(jan,jul);
+let note=jan!==jul&&r.off>std?'летнее время':'стандартное время';if(Math.abs(r.off-Math.round(r.off/15)*15)>0.01)note='местное среднее время (LMT)';
+let w='';if(r.flag==='gap')w=`<br><span class="warn">Такого местного времени не существовало — часы переводили вперёд. Взято смещение до перевода.</span>`;
+if(r.flag==='amb')w=`<br><span class="warn">Неоднозначное время (перевод часов назад): возможно ${fmtOff(r.off)} или ${fmtOff(r.alt)}. Взято первое; при необходимости отключите автоопределение и введите вручную.</span>`;
+if($('tu').checked)w+=`<br><small>Время неизвестно — смещение определено на 12:00.</small>`;
+if(y<1970)w+=`<br><small>До 1970 г. tzdata может упрощать историю отдельных городов (зоны объединены по региону). Сверьтесь со справочником, если важна точность.</small>`;
+const city=$('city').value;box.innerHTML=`<b>${city?esc(city)+' · ':''}${esc(zone)}</b> · ${bd.split('-').reverse().join('.')} ${String(h).padStart(2,'0')}:${String(mi).padStart(2,'0')} → <b>${fmtOff(r.off)}</b> <small>(${note})</small>${w}`;}
+
+const DHI={
+gen:`<b>Шани Дхайя</b> («дхайя» на хинди — «два с половиной») — транзит Сатурна по 4-му или 8-му знаку от натальной Луны. Длится ≈2,5 года — столько Сатурн в среднем проходит один знак. Короче и мягче Саде Сати.<span class="mu">За один оборот Сатурна (~30 лет): одна Саде Сати и две Дхайи. Астрологическая концепция, научной базы не имеет.</span>`,
+3:`<b>Кантака Шани</b> — «Сатурн-шип», «заноза». Другие названия: Ардхаштама Шани («половина восьми»), Малое Паноти.<br>Сатурн в <b>4-м</b> знаке от Луны.<br>Сферы (по трактовкам): дом, мать, недвижимость, транспорт, внутренний покой.<br>Сила: мягче Аштамы.<span class="mu">В некоторых школах «Кантака» — также транзиты по 7-му и 10-му от Луны; здесь — только 4-й.</span>`,
+7:`<b>Аштама Шани</b> — «восьмой Сатурн» (Аштам Шани).<br>Сатурн в <b>8-м</b> знаке от Луны.<br>Сферы (по трактовкам): скрытые дела, внезапные перемены, наследство, хронические болезни, трансформация.<br>Сила: тяжелее Кантаки — 8-й дом считается самым «злым» из дустхан.`,
+diff:`<b>Отличие от Саде Сати</b><br>• Длительность: Саде Сати ≈7,5 лет (три знака подряд), каждая Дхайя ≈2,5 года (один знак).<br>• Сила: обе Дхайи считаются менее интенсивными.<br>• Направленность: Саде Сати давит на психику и жизнь в целом через Луну; Дхайя — на конкретные сферы 4-го или 8-го дома.<br>• Частота: за ~30 лет — одна Саде Сати и две Дхайи.`};
+const DHSPH={3:'дом, мать, недвижимость, транспорт, покой',7:'скрытое, внезапные перемены, наследство, здоровье, трансформация'};
+const plain=h=>h.replace(/<br>/g,'\n').replace(/<span class="mu">/g,'\n').replace(/<[^>]+>/g,'');
+function tipI(key,pos=''){return `<span class="tip i ${pos}" tabindex="0">i<span class="tipc">${DHI[key]}</span></span>`;}
+function dhTag(r,pos='l',txt){return `<span class="tip ${pos}" tabindex="0"><span class="tag t-dh">${txt||PH[r][0]}</span><span class="tipc">${DHI[r]}</span></span>`;}
+function dhInfo(open){return `<details class="cyc"${open?' open':''}><summary>Справка: что такое Шани Дхайя</summary><div class="infob">
+<p style="margin:4px 0 10px">${DHI.gen.replace('<span class="mu">','<br><small>').replace('</span>','</small>')}</p>
+<table class="info"><tr><th></th><th>Кантака Шани</th><th>Аштама Шани</th></tr>
+<tr><td>Где Сатурн</td><td>4-й знак от Луны</td><td>8-й знак от Луны</td></tr>
+<tr><td>Перевод</td><td>«Сатурн-шип», «заноза»</td><td>«восьмой Сатурн»</td></tr>
+<tr><td>Другие названия</td><td>Ардхаштама Шани («половина восьми»), Малое Паноти</td><td>Аштам Шани</td></tr>
+<tr><td>Сферы (по трактовкам)</td><td>Дом, мать, недвижимость, транспорт, внутренний покой</td><td>Скрытые дела, внезапные перемены, наследство, хронические болезни, трансформация</td></tr>
+<tr><td>Насколько тяжёлым считается</td><td>Мягче</td><td>Тяжелее — 8-й дом считается самым «злым» из дустхан</td></tr></table>
+<h2>Чем отличается от Саде Сати</h2><ul>
+<li><b>Длительность:</b> Саде Сати — около 7,5 лет (три знака подряд), каждая Дхайя — около 2,5 лет (один знак).</li>
+<li><b>Сила:</b> обе Дхайи считаются менее интенсивными, чем Саде Сати.</li>
+<li><b>Направленность:</b> Саде Сати давит на психику и жизнь в целом через Луну, Дхайя затрагивает конкретные сферы 4-го или 8-го дома.</li>
+<li><b>Частота:</b> за один оборот Сатурна (около 30 лет) бывает одна Саде Сати и две Дхайи.</li></ul>
+<small>Терминология различается: в некоторых источниках Кантака Шани — транзиты по 4-му, 7-му и 10-му от Луны; иногда «Ардха Сати» используют как синоним Дхайи. В калькуляторе: Кантака — 4-й знак, Аштама — 8-й. Подробнее — вкладка «📖 Справка».</small></div></details>`;}
+
+const SIGNS=['Меша (Овен)','Вришабха (Телец)','Митхуна (Близнецы)','Карка (Рак)','Симха (Лев)','Канья (Дева)','Тула (Весы)','Вришчика (Скорпион)','Дхану (Стрелец)','Макара (Козерог)','Кумбха (Водолей)','Мина (Рыбы)'];
+const NAK=['Ашвини','Бхарани','Криттика','Рохини','Мригашира','Ардра','Пунарвасу','Пушья','Ашлеша','Магха','Пурва Пхалгуни','Уттара Пхалгуни','Хаста','Читра','Свати','Вишакха','Анурадха','Джйештха','Мула','Пурва Ашадха','Уттара Ашадха','Шравана','Дхаништха','Шатабхиша','Пурва Бхадрапада','Уттара Бхадрапада','Ревати'];
+const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let MODE=1,CSV=[],EV=[],LAST=null;
+SIGNS.forEach((s,i)=>$('ms').insertAdjacentHTML('beforeend',`<option value="${i}">${s}</option>`));
+function dms(x){x=norm(x);const s=Math.floor(x/30),r=x-s*30;let d=Math.floor(r),m=Math.round((r-d)*60);if(m===60){d++;m=0}return `${d}°${String(m).padStart(2,'0')}′ ${SIGNS[s].split(' ')[0]}`;}
+const fmt=jd=>new Date(msOf(jd)).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+const fmtD=jd=>new Date(msOf(jd)).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
+function dur(days){const y=days/365.2425;let Y=Math.floor(y),M=Math.round((y-Y)*12);if(M===12){Y++;M=0}return Y?`${Y} г. ${M} мес.`:(M?`${M} мес.`:`${Math.round(days)} дн.`);}
+const rel=(s,m)=>(s-m+12)%12;const ACC={11:'1-ю фазу',0:'2-ю фазу',1:'3-ю фазу'};
+const PH={11:['1-я фаза — 12-й от Луны (Вирайя)','p1','1-я фаза'],0:['2-я фаза — над Луной (Джанма, пик)','p2','2-я фаза'],1:['3-я фаза — 2-й от Луны (Вааку)','p3','3-я фаза'],3:['Кантака Шани — 4-й от Луны','dh','Кантака'],7:['Аштама Шани — 8-й от Луны','dh','Аштама']};
+const dateJD=s=>{if(!s)return null;const [y,m,d]=s.split('-').map(Number);return jdOf(Date.UTC(y,m-1,d,12));};
+function buildCycles(segs,set,gap=800){const out=[];let cur=null,pend=[];
+for(const s of segs){if(set.includes(s.sign)){if(cur&&s.start-cur.end<gap){pend.forEach(p=>cur.parts.push({...p,brk:true}));cur.parts.push(s);}else{cur={parts:[s]};out.push(cur);}cur.start=cur.parts[0].start;cur.end=s.end;cur.open=!!s.open;pend=[];}
+else if(cur)pend.push(s);}return out;}
+function applyEndMode(cycles,m){if($('endm').value!=='first')return cycles;const last=(m+1)%12;
+return cycles.map(c=>{const k=c.parts.findIndex(p=>!p.brk&&p.sign===last);if(k<0)return c;const parts=c.parts.slice(0,k+1);return{...c,parts,end:parts[k].end,open:parts[k].open&&k===c.parts.length-1,cut:k<c.parts.length-1};});}
+function settings(){return{m:$('ay').value,c:parseFloat($('ayc').value)||0};}
+function localToJD(ds,ts,tz){const [y,mo,d]=ds.split('-').map(Number);const [h,mi]=ts.split(':').map(Number);return jdOf(Date.UTC(y,mo-1,d,h,mi)-tz*3600000);}
+function tzFor(ds,ts){if(!$('tzon').checked)return parseFloat($('tz').value)||0;const [y,mo,d]=ds.split('-').map(Number);const [h,mi]=ts.split(':').map(Number);return resolveOffset($('zone').value||DEVZ,Date.UTC(y,mo-1,d,h,mi)).off/60;}
+function satNow(st){const jd=jdOf(Date.now());const l=satSid(jd,st.m,st.c);return{jd,l,r:((satSid(jd+1,st.m,st.c)-l+540)%360-180)<0};}
+function statusAt(jd,ctx){for(let i=0;i<ctx.ss.length;i++){const c=ctx.ss[i];if(jd>=c.start&&jd<c.end){const p=c.parts.find(p=>jd>=p.start&&jd<p.end);if(!p)break;
+if(p.brk)return{cls:'exit',txt:`Саде Сати №${i+1}: временный выход`};const r=rel(p.sign,ctx.m);return{cls:PH[r][1],txt:`Саде Сати №${i+1}: ${PH[r][2]}`};}}
+for(const d of ctx.dh){if(jd>=d.start&&jd<d.end){const r=rel(d.parts[0].sign,ctx.m);return{cls:'dh',txt:PH[r][0],r};}}
+return{cls:'norm',txt:'Нормальный период'};}
+const stTag=(s,suf='')=>s.cls==='dh'?dhTag(s.r,'r',s.txt+suf):`<span class="tag t-${s.cls}">${s.txt}${suf}</span>`;
+function evStatus(e,ctx){const a=dateJD(e.from);if(a===null)return '';const b=dateJD(e.to);
+if(b===null||b<=a)return stTag(statusAt(a,ctx));
+const pts=new Map();const n=Math.min(400,Math.max(2,Math.ceil((b-a)/5)));for(let i=0;i<=n;i++){const s=statusAt(a+(b-a)*i/n,ctx);const q=pts.get(s.txt)||{s,v:0};q.v++;pts.set(s.txt,q);}
+return [...pts.values()].map(q=>stTag(q.s,` · ${Math.round(q.v/(n+1)*100)}%`)).join(' ');}
+function evIn(a,b){return EV.map((e,i)=>({e,i})).filter(({e})=>{const x=dateJD(e.from);if(x===null)return false;const y=dateJD(e.to)??x;return y>=a&&x<b;}).map(({i})=>`<span class="evl">${i+1}</span>`).join('');}
+function cycleTree(c,i,ctx,nowJD){const m=ctx.m,birth=ctx.birth,P=c.parts;const act=nowJD>=c.start&&nowJD<c.end;
+const net=P.filter(p=>!p.brk).reduce((s,p)=>s+p.end-p.start,0),nEx=P.filter(p=>p.brk).length;
+const age=j=>birth?` <small>(возраст ${Math.max(0,(j-birth)/365.2425).toFixed(1)})</small>`:'';
+const phs=[11,0,1].map(r=>({r,items:[]}));
+P.forEach((p,k)=>{if(p.brk){phs.find(x=>x.r===rel(P[k-1].sign,m)).items.push({t:'exit',p});return;}
+const ph=phs.find(x=>x.r===rel(p.sign,m));const last=ph.items[ph.items.length-1];if(last&&last.t==='int'){ph.items.push({t:'away',p:P[k-1]});}ph.items.push({t:'int',p});});
+const cur=p=>nowJD>=p.start&&nowJD<p.end?' cur':'';
+let h=`<details class="cyc${act?' now':''}" ${act||i===0?'open':''}><summary>Саде Сати №${i+1}: ${fmtD(c.start)} — ${c.open?'≥ ':''}${fmtD(c.end)}
+<span class="tag t-p2">${dur(c.end-c.start)}</span>${nEx?`<span class="tag t-exit">временных выходов: ${nEx}</span>`:''}${act?'<span class="tag t-ev">идёт сейчас</span>':''}${birth&&c.start<birth?'<span class="tag t-norm">начался до рождения</span>':''}${evIn(c.start,c.end)}</summary><ul class="tree">
+<li class="ev-in">Вход в Саде Сати: ${fmt(c.start)} — Сатурн входит в ${SIGNS[P[0].sign]}${age(c.start)}</li>`;
+phs.forEach(ph=>{const ints=ph.items.filter(x=>x.t==='int');if(!ints.length)return;const tot=ints.reduce((s,x)=>s+x.p.end-x.p.start,0);
+const f=ints[0].p.start,l=ints[ints.length-1].p.end;
+h+=`<li><span class="ph"><span class="tag t-${PH[ph.r][1]}">${PH[ph.r][0]}</span> ${SIGNS[ints[0].p.sign]}</span><br><small>${fmtD(f)} — ${fmtD(l)} · в знаке ${dur(tot)}${ints.length>1?` · интервалов: ${ints.length}`:''}</small> ${evIn(f,l)}<ul>`;
+let n=0;ph.items.forEach(x=>{const p=x.p;
+if(x.t==='int'){n++;h+=`<li class="int${cur(p)}">${ints.length>1?`Интервал ${n}: `:''}${fmt(p.start)} → ${fmt(p.end)} <small>(${dur(p.end-p.start)})</small>${p.exitRetro?' <small>выход ℞</small>':''} ${evIn(p.start,p.end)}</li>`;}
+else if(x.t==='exit'){h+=`<li class="ext${cur(p)}"><b>Временный выход</b> из Саде Сати: ${fmt(p.start)} → возврат ${fmt(p.end)} <small>(${dur(p.end-p.start)}, Сатурн в ${SIGNS[p.sign]})</small> ${evIn(p.start,p.end)}</li>`;}
+else{const back=[11,0,1].indexOf(rel(p.sign,m))<[11,0,1].indexOf(ph.r);h+=`<li class="away">${back?'Ретро-откат':'Переход'} в ${ACC[rel(p.sign,m)]}: ${fmtD(p.start)} → ${fmtD(p.end)} <small>(${dur(p.end-p.start)})</small></li>`;}
+CSV.push([`Саде Сати ${i+1}`,x.t==='int'?PH[rel(p.sign,m)][2]:x.t==='exit'?'временный выход':'откат/переход',SIGNS[p.sign],fmt(p.start),fmt(p.end),((p.end-p.start)/365.2425).toFixed(2)]);});
+h+='</ul></li>';});
+h+=`<li class="ev-out">${c.open?'Выход за пределами горизонта расчёта':`Выход из Саде Сати: ${fmt(c.end)}`}${c.open?'':age(c.end)}${c.cut?' <small>(по правилу первого выхода)</small>':''}</li>
+<li><small>Общая длительность ${dur(c.end-c.start)} · чистое время в трёх знаках ${dur(net)}</small></li></ul></details>`;
+CSV.push([`Саде Сати ${i+1}`,'ВЕСЬ ПЕРИОД','',fmt(c.start),fmt(c.end),((c.end-c.start)/365.2425).toFixed(2)]);
+return h;}
+function dhTable(list,ctx,nowJD){if(!list.length)return '';let h=`<h2>Шани Дхайя (≈2,5 года) ${tipI('gen','l')} ${tipI('diff','l')}</h2><table><tr><th>Тип <small>(наведите для описания)</small></th><th>Знак Сатурна</th><th>Начало</th><th>Конец</th><th>Длит.</th><th>Сферы (по трактовкам)</th><th>События</th></tr>`;
+list.sort((a,b)=>a.start-b.start).forEach(c=>{const r=rel(c.parts[0].sign,ctx.m);const a=nowJD>=c.start&&nowJD<c.end;
+h+=`<tr class="${a?'now':''}"><td>${dhTag(r,'l')}${a?' <span class="tag t-ev">сейчас</span>':''}</td><td>${SIGNS[c.parts[0].sign]}</td><td>${fmtD(c.start)}</td><td>${fmtD(c.end)}</td><td>${dur(c.end-c.start)}</td><td><small>${DHSPH[r]}</small></td><td>${evIn(c.start,c.end)}</td></tr>`;
+CSV.push(['Дхайя',PH[r][0],SIGNS[c.parts[0].sign],fmt(c.start),fmt(c.end),((c.end-c.start)/365.2425).toFixed(2)]);});return h+'</table>'+dhInfo(false);}
+function statusBlock(cycles,nowJD,m,dh){const c=cycles.find(c=>nowJD>=c.start&&nowJD<c.end);let x='';
+const d=(dh||[]).find(d=>nowJD>=d.start&&nowJD<d.end);if(d){const r=rel(d.parts[0].sign,m);x=`<br>Сейчас также идёт ${dhTag(r,'l')} до ${fmtD(d.end)} (осталось ${dur(d.end-nowJD)}).`;}
+if(c){const p=c.parts.find(p=>nowJD>=p.start&&nowJD<p.end);const ph=p.brk?'временный выход Сатурна (ретро-петля)':PH[rel(p.sign,m)][0];
+return `<span class="bad big">Саде Сати идёт сейчас</span><br>${ph}. Период: ${fmtD(c.start)} — ${fmtD(c.end)}, осталось ${dur(c.end-nowJD)}.`+x;}
+const n=cycles.find(c=>c.start>nowJD);return `<span class="ok big">Сейчас Саде Сати нет</span>`+(n?`<br>Следующий: ${fmtD(n.start)} — ${fmtD(n.end)} (через ${dur(n.start-nowJD)}).`:'')+x;}
+const CX=380,CY=380;
+function pt(a,r){return[CX+r*Math.sin(a*RAD),CY-r*Math.cos(a*RAD)];}
+const f2=v=>v.toFixed(2);
+function arc(a0,a1,r0,r1,fill,title){if(a1-a0<0.02)return '';if(a1-a0>=359.99)a1=a0+359.99;const L=a1-a0>180?1:0;const [x0,y0]=pt(a0,r1),[x1,y1]=pt(a1,r1),[x2,y2]=pt(a1,r0),[x3,y3]=pt(a0,r0);
+return `<path d="M${f2(x0)} ${f2(y0)}A${r1} ${r1} 0 ${L} 1 ${f2(x1)} ${f2(y1)}L${f2(x2)} ${f2(y2)}A${r0} ${r0} 0 ${L} 0 ${f2(x3)} ${f2(y3)}Z" style="fill:${fill}" stroke="var(--pn)" stroke-width="0.6"><title>${esc(title)}</title></path>`;}
+function diagram(ctx){const T0=ctx.t0,T1=ctx.t1,H=T1-T0,A=j=>Math.max(0,Math.min(360,(j-T0)/H*360));const nowJD=jdOf(Date.now());
+const R0=230,R1=285,D0=212,D1=224;let s=`<svg id="svg" viewBox="0 0 760 760" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,Segoe UI,Roboto,sans-serif"><rect width="760" height="760" style="fill:var(--pn)"/>`;
+s+=arc(0,360,R0,R1,'var(--c-norm)','Нормальный период');
+ctx.ss.forEach((c,i)=>c.parts.forEach(p=>{const a0=A(p.start),a1=A(p.end);if(a1<=0||a0>=360)return;
+const cls=p.brk?'exit':PH[rel(p.sign,ctx.m)][1];s+=arc(a0,a1,R0,R1,`var(--c-${cls})`,`Саде Сати №${i+1} · ${p.brk?'временный выход':PH[rel(p.sign,ctx.m)][2]} · ${fmtD(p.start)} — ${fmtD(p.end)}`);}));
+if(ctx.dh.length){s+=arc(0,360,D0,D1,'var(--c-bg2)','Внутреннее кольцо — Шани Дхайя');ctx.dh.forEach(c=>{const r=rel(c.parts[0].sign,ctx.m);s+=arc(A(c.start),A(c.end),D0,D1,'var(--c-dh)',`${PH[r][0]} · ${fmtD(c.start)} — ${fmtD(c.end)}\n\n${plain(DHI[r])}`);});}
+const yrs=H/365.2425,stp=yrs>60?5:yrs>25?2:1;
+for(let y=0;y<=yrs+1e-6;y+=stp){const a=y/yrs*360;if(a>=360)continue;const big=y%(stp*2)===0;const [x0,y0]=pt(a,R0-(big?10:5)),[x1,y1]=pt(a,R0);
+s+=`<line x1="${f2(x0)}" y1="${f2(y0)}" x2="${f2(x1)}" y2="${f2(y1)}" style="stroke:var(--c-tick)" stroke-width="1"/>`;
+if(big&&y>0){const [tx,ty]=pt(a,R0-(ctx.dh.length?42:24));const lab=ctx.birth?y:new Date(msOf(T0)).getUTCFullYear()+y;s+=`<text x="${f2(tx)}" y="${f2(ty)}" font-size="11" text-anchor="middle" dominant-baseline="middle" style="fill:var(--mu)">${lab}</text>`;}}
+if(nowJD>T0&&nowJD<T1){const a=A(nowJD);const [x0,y0]=pt(a,R0-4),[x1,y1]=pt(a,R1+4),[tx,ty]=pt(a,R0-60);
+s+=`<line x1="${f2(x0)}" y1="${f2(y0)}" x2="${f2(x1)}" y2="${f2(y1)}" style="stroke:var(--c-now)" stroke-width="2.2"/><circle cx="${f2(x1)}" cy="${f2(y1)}" r="3" style="fill:var(--c-now)"/><text x="${f2(tx)}" y="${f2(ty)}" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle" style="fill:var(--c-now)">сейчас</text>`;}
+s+=`<line x1="${CX}" y1="${CY-R0+14}" x2="${CX}" y2="${CY-R1-16}" style="stroke:var(--tx)" stroke-width="2.5"/><polygon points="${CX-6},${CY-R1-12} ${CX+6},${CY-R1-12} ${CX},${CY-R1-22}" style="fill:var(--tx)"/>
+<text x="${CX+10}" y="${CY-R1-16}" font-size="12" font-weight="600" style="fill:var(--tx)">${ctx.birth?'Рождение':'Начало'} ${fmtD(T0)}</text>`;
+const lv=[];const evs=EV.map((e,i)=>({i,a:dateJD(e.from),b:dateJD(e.to),d:e.desc})).filter(e=>e.a!==null&&e.a<T1&&(e.b??e.a)>=T0);
+evs.sort((x,y)=>x.a-y.a).forEach(e=>{const a0=A(e.a),a1=e.b&&e.b>e.a?A(e.b):a0;let L=0;while(lv[L]&&lv[L].some(([p,q])=>!(a1+4<p||a0-4>q)))L++;(lv[L]=lv[L]||[]).push([a0,a1]);
+const r=R1+10+L*15;const tt=`#${e.i+1} ${e.d||''} (${fmtD(e.a)}${e.b&&e.b>e.a?' — '+fmtD(e.b):''})`;
+if(a1-a0>0.3){const L2=a1-a0>180?1:0;const [x0,y0]=pt(a0,r),[x1,y1]=pt(a1,r);s+=`<path d="M${f2(x0)} ${f2(y0)}A${r} ${r} 0 ${L2} 1 ${f2(x1)} ${f2(y1)}" fill="none" style="stroke:var(--c-ev)" stroke-width="4" stroke-linecap="round"><title>${esc(tt)}</title></path>`;}
+const [lx,ly]=pt(a0,r);const [px,py]=pt(a0,R1);s+=`<line x1="${f2(px)}" y1="${f2(py)}" x2="${f2(lx)}" y2="${f2(ly)}" style="stroke:var(--c-ev)" stroke-width="1" stroke-dasharray="2 2"/>
+<g><title>${esc(tt)}</title><circle cx="${f2(lx)}" cy="${f2(ly)}" r="7.5" style="fill:var(--c-ev)" stroke="var(--pn)" stroke-width="1.5"/><text x="${f2(lx)}" y="${f2(ly)}" font-size="9" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${e.i+1}</text></g>`;});
+const tot=ctx.ss.reduce((z,c)=>z+Math.max(0,Math.min(c.end,T1)-Math.max(c.start,T0)),0);
+s+=`<text x="${CX}" y="${CY-26}" font-size="20" font-weight="700" text-anchor="middle" style="fill:var(--tx)">Саде Сати</text>
+<text x="${CX}" y="${CY}" font-size="13" text-anchor="middle" style="fill:var(--mu)">${esc(ctx.name||'')}${ctx.name?' · ':''}Луна: ${SIGNS[ctx.m]}</text>
+<text x="${CX}" y="${CY+22}" font-size="12" text-anchor="middle" style="fill:var(--mu)">Горизонт ${Math.round(yrs)} лет · в Саде Сати ${(tot/365.2425).toFixed(1)} лет (${Math.round(tot/H*100)}%)</text>
+<text x="${CX}" y="${CY+42}" font-size="11" text-anchor="middle" style="fill:var(--mu)">по часовой стрелке, метки — ${ctx.birth?'возраст':'годы'}</text></svg>`;
+const leg=`<div class="leg"><div><span class="sw" style="background:var(--c-norm)"></span>Нормальный период</div><div><span class="sw" style="background:var(--c-p1)"></span>Саде Сати — 1-я фаза</div>
+<div><span class="sw" style="background:var(--c-p2)"></span>Саде Сати — 2-я фаза (пик)</div><div><span class="sw" style="background:var(--c-p3)"></span>Саде Сати — 3-я фаза</div>
+<div><span class="sw" style="background:var(--c-exit)"></span>Временный выход (ретро-петля)</div>${ctx.dh.length?`<div><span class="sw" style="background:var(--c-dh)"></span>Шани Дхайя (внутреннее кольцо)${tipI('gen','r')}</div><div style="padding-left:20px">${dhTag(3,'r','Кантака — 4-й')} ${dhTag(7,'r','Аштама — 8-й')}</div>`:''}
+<div><span class="sw" style="background:var(--c-ev);border-radius:50%"></span>События пользователя (№)</div>
+<div style="margin-top:8px">${evs.map(e=>`<div><span class="evl">${e.i+1}</span> ${esc(EV[e.i].desc||'—')} <small>${fmtD(e.a)}${e.b&&e.b>e.a?' — '+fmtD(e.b):''}</small></div>`).join('')}</div>
+<div class="row"><button class="sec sm" onclick="expSVG()">Скачать SVG</button><button class="sec sm" onclick="expPNG()">Скачать PNG</button></div><small>Наведите курсор на сектор, метку или ⓘ для подсказки.</small></div>`;
+return `<div class="pn"><h2 style="margin-top:0">Круговая диаграмма жизни</h2><div class="diag">${s}${leg}</div></div>`;}
+function svgInline(){let t=$('svg').outerHTML;const cs=getComputedStyle(document.documentElement);return t.replace(/var\((--[\w-]+)\)/g,(_,v)=>cs.getPropertyValue(v).trim());}
+function saveBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);}
+function expSVG(){saveBlob(new Blob([svgInline()],{type:'image/svg+xml'}),'sade_sati_diagram.svg');}
+function expPNG(){const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=1520;const g=c.getContext('2d');g.drawImage(img,0,0,1520,1520);c.toBlob(b=>saveBlob(b,'sade_sati_diagram.png'));};
+img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svgInline());}
+function renderEV(){const tb=$('evt').querySelector('tbody');tb.innerHTML=EV.map((e,i)=>`<tr><td>${i+1}</td><td><input type="date" data-i="${i}" data-k="from" value="${esc(e.from)}"></td><td><input type="date" data-i="${i}" data-k="to" value="${esc(e.to)}"></td>
+<td><input data-i="${i}" data-k="desc" value="${esc(e.desc)}" placeholder="описание события"></td><td class="evs">${LAST?evStatus(e,LAST):''}</td><td><button class="sec sm" data-del="${i}" title="Удалить">✕</button></td></tr>`).join('')||'<tr><td colspan="6"><small>Событий нет — нажмите «Добавить событие».</small></td></tr>';}
+$('evt').addEventListener('input',e=>{const t=e.target;if(t.dataset.i===undefined)return;EV[+t.dataset.i][t.dataset.k]=t.value;persist();clearTimeout(window._rt);window._rt=setTimeout(()=>run(true),500);});
+$('evt').addEventListener('click',e=>{const d=e.target.dataset.del;if(d===undefined)return;EV.splice(+d,1);persist();run();});
+$('evadd').onclick=()=>{EV.push({from:'',to:'',desc:''});renderEV();persist();const ins=$('evt').querySelectorAll('input[data-k=from]');ins[ins.length-1]?.focus();};
+$('evsort').onclick=()=>{EV.sort((a,b)=>(a.from||'9').localeCompare(b.from||'9'));persist();run();};
+$('evclr').onclick=()=>{if(confirm('Удалить все события?')){EV=[];persist();run();}};
+const FIELDS=['nm','bd','bt','city','zone','tzon','tz','tu','yrs','ms','y0','y1','ay','ayc','endm','dh'];
+function getState(){const o={app:'sade-sati-calculator',version:3,saved:new Date().toISOString(),mode:MODE,theme:document.documentElement.dataset.theme,events:EV};FIELDS.forEach(f=>{const el=$(f);o[f]=el.type==='checkbox'?el.checked:el.value;});return o;}
+function setState(o){if(!o||typeof o!=='object')throw new Error('Неверный формат');
+if(o.tzon===undefined)o.tzon=false;
+FIELDS.forEach(f=>{if(o[f]===undefined)return;const el=$(f);if(el.type==='checkbox')el.checked=!!o[f];else el.value=o[f];});
+if(o.city&&CITYZ[o.city]&&!o.zone)$('zone').value=CITYZ[o.city];if(!$('zone').value)$('zone').value=DEVZ;
+EV=Array.isArray(o.events)?o.events.map(e=>({from:e.from||'',to:e.to||'',desc:e.desc||''})):[];if(o.theme)setTheme(o.theme);$('bt').disabled=$('tu').checked;updateTZ();tab(o.mode||1,true);}
+function persist(){try{localStorage.setItem('sadesati_v2',JSON.stringify(getState()));}catch(e){}}
+$('save').onclick=()=>{const o=getState();const nm=(o.nm||'sade_sati').replace(/[^\wа-яё\-]+/gi,'_');saveBlob(new Blob([JSON.stringify(o,null,2)],{type:'application/json'}),`${nm}_${new Date().toISOString().slice(0,10)}.json`);};
+$('loadb').onclick=()=>$('loadf').click();
+$('loadf').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{setState(JSON.parse(r.result));persist();}catch(err){alert('Не удалось загрузить файл: '+err.message);}e.target.value='';};r.readAsText(f);};
+function setTheme(t){document.documentElement.dataset.theme=t;$('theme').textContent=t==='dark'?'☀ Светлая':'☾ Тёмная';}
+$('theme').onclick=()=>{setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');persist();};
+/* ---------- справка ---------- */
+$('hq').addEventListener('input',()=>{const q=$('hq').value.trim().toLowerCase();let n=0;document.querySelectorAll('#help section.hs').forEach(s=>{const ok=!q||s.textContent.toLowerCase().includes(q);s.classList.toggle('hide',!ok);if(ok)n++;});
+$('toc').classList.toggle('hide',!!q);$('hnone').classList.toggle('hide',n>0);});
+$('hprint').onclick=()=>{document.body.classList.add('phelp');window.print();setTimeout(()=>document.body.classList.remove('phelp'),500);};
+function run(keepFocus){if(MODE===4)return;CSV=[['Блок','Фаза','Знак Сатурна','Начало','Конец','Лет']];const st=settings();const nowJD=jdOf(Date.now());let h='';const sn=satNow(st);$('fev').classList.toggle('hide',MODE===3);
+if(MODE===1||MODE===2){let m,birth=null,t0,t1,info='';
+if(MODE===1){if(!$('bd').value){$('out').innerHTML='';return;}updateTZ();const tu=$('tu').checked,bt=tu?'12:00':($('bt').value||'12:00');const tz=tzFor($('bd').value,bt);birth=localToJD($('bd').value,bt,tz);
+const ml=moonSid(birth,st.m,st.c);m=Math.floor(ml/30);const nk=Math.floor(ml/(360/27)),pada=Math.floor((ml%(360/27))/(360/108))+1;
+let warn='';if(tu){const a=moonSid(localToJD($('bd').value,'00:00',tzFor($('bd').value,'00:00')),st.m,st.c),b=moonSid(localToJD($('bd').value,'23:59',tzFor($('bd').value,'23:59')),st.m,st.c);const sa=Math.floor(a/30),sb=Math.floor(b/30);
+warn=sa!==sb?`<div class="bad">Внимание: в этот день Луна сменила знак (${SIGNS[sa]} → ${SIGNS[sb]}). Без времени рождения знак не определить — проверьте оба на вкладке «По знаку Луны».</div>`:`<div class="ok">Весь день Луна была в ${SIGNS[sa]} (${dms(a)} … ${dms(b)}) — результат надёжен.</div>`;}
+else{const e=ml%30;if(e<1||e>29)warn=`<div class="warn">Луна у границы знака (${Math.min(e,30-e).toFixed(2)}°). Ошибка времени ±${Math.round(Math.min(e,30-e)/0.55)} ч может сменить знак.</div>`;}
+t0=birth;t1=birth+(parseFloat($('yrs').value)||90)*365.2425;
+info=`<span class="mu">Момент рождения (UTC)</span><span>${new Date(msOf(birth)).toISOString().slice(0,16).replace('T',' ')} <small>(смещение ${fmtOff(tz*60)})</small></span>
+<span class="mu">Луна при рождении</span><span class="big">${dms(ml)}</span><span class="mu">Знак Луны (раши)</span><span>${SIGNS[m]}</span><span class="mu">Накшатра</span><span>${NAK[nk]}, пада ${pada}</span>
+<span class="mu">Сатурн при рождении</span><span>${dms(satSid(birth,st.m,st.c))}</span><span class="mu">Сатурн сейчас</span><span>${dms(sn.l)}${sn.r?' ℞':''}</span><span class="mu">Айанамша</span><span>${ayan(birth,st.m,st.c).toFixed(4)}°</span></div>${warn}`;}
+else{m=+$('ms').value;t0=jdOf(Date.UTC(+$('y0').value,0,1));t1=jdOf(Date.UTC(+$('y1').value+1,0,1));if(!(t1>t0+365)){$('out').innerHTML='<div class="pn bad">Неверный диапазон лет</div>';return;}
+info=`<span class="mu">Знак Луны</span><span class="big">${SIGNS[m]}</span><span class="mu">Сатурн сейчас</span><span>${dms(sn.l)}${sn.r?' ℞':''}</span></div>`;}
+const segs=saturnSegments(t0-3200,t1,st.m,st.c);
+const ss=applyEndMode(buildCycles(segs,[(m+11)%12,m,(m+1)%12]),m).filter(c=>c.end>t0);
+const dh=$('dh').checked?[...buildCycles(segs,[(m+3)%12]),...buildCycles(segs,[(m+7)%12])].filter(c=>c.end>t0):[];
+LAST={m,birth,t0,t1,ss,dh,name:$('nm').value};
+h+=`<div class="pn"><div class="kv">${info}<div style="margin-top:10px">${statusBlock(ss,nowJD,m,dh)}</div></div>`;
+h+=diagram(LAST);
+h+=`<div class="pn"><h2 style="margin-top:0">Иерархия периодов Саде Сати</h2><small>▶ вход · ● пребывание в знаке фазы · ↺ ретро-откат/переход между фазами · <span class="tag t-exit">⤴ временный выход</span> · ◀ окончательный выход · <span class="evl">N</span> события из таблицы</small>`;
+ss.forEach((c,i)=>h+=cycleTree(c,i,LAST,nowJD));h+=dhTable(dh,LAST,nowJD);
+EV.forEach((e,i)=>{const a=dateJD(e.from);if(a!==null)CSV.push(['Событие '+(i+1),e.desc,statusAt(a,LAST).txt,e.from,e.to,'']);});
+h+=`<div class="row"><button class="sec sm" onclick="dl()">Скачать CSV</button></div></div>`;}
+else{LAST=null;const segs=saturnSegments(nowJD-4000,nowJD+12000,st.m,st.c);
+h+=`<div class="pn"><div class="kv"><span class="mu">Сатурн сейчас</span><span class="big">${dms(sn.l)}${sn.r?' ℞':''}</span></div>
+<h2>Статус для каждого знака Луны на ${fmtD(nowJD)}</h2><table><tr><th>Знак Луны</th><th>Статус</th><th>Текущий / ближайший период Саде Сати</th></tr>`;
+for(let m=0;m<12;m++){const ss=applyEndMode(buildCycles(segs,[(m+11)%12,m,(m+1)%12]),m);const c=ss.find(c=>nowJD>=c.start&&nowJD<c.end)||ss.find(c=>c.start>nowJD);
+const act=c&&nowJD>=c.start;let stt='<span class="tag t-norm">нормальный</span>';if(act){const p=c.parts.find(p=>nowJD>=p.start&&nowJD<p.end);stt=p.brk?'<span class="tag t-exit">временный выход</span>':`<span class="tag t-${PH[rel(p.sign,m)][1]}">${PH[rel(p.sign,m)][0]}</span>`;}
+else{const r=rel(Math.floor(sn.l/30),m);if(r===3||r===7)stt=dhTag(r,'l');}
+h+=`<tr class="${act?'now':''}"><td>${SIGNS[m]}</td><td>${stt}</td><td>${c?`${act?'':'след.: '}${fmtD(c.start)} — ${fmtD(c.end)}`:''}</td></tr>`;
+CSV.push(['Все знаки',SIGNS[m],'',c?fmt(c.start):'',c?fmt(c.end):'',act?'сейчас':'']);}
+h+=`</table>${dhInfo(false)}<div class="row"><button class="sec sm" onclick="dl()">Скачать CSV</button></div></div>`;}
+$('out').innerHTML=h;
+if(keepFocus===true){document.querySelectorAll('#evt td.evs').forEach((td,i)=>{if(EV[i])td.innerHTML=LAST?evStatus(EV[i],LAST):'';});}else renderEV();}
+function dl(){const t='\ufeff'+CSV.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(';')).join('\r\n');saveBlob(new Blob([t],{type:'text/csv'}),'sade_sati.csv');}
+function tab(n,silent){MODE=n;[1,2,3,4].forEach(i=>$('tb'+i).className=i===n?'':'sec');$('f1').classList.toggle('hide',n!==1);$('f2').classList.toggle('hide',n!==2);
+$('fc').classList.toggle('hide',n===4);$('out').classList.toggle('hide',n===4);$('help').classList.toggle('hide',n!==4);$('foot').classList.toggle('hide',n===4);
+if(n===4)$('fev').classList.add('hide');else run();if(!silent)persist();}
+[1,2,3,4].forEach(i=>$('tb'+i).onclick=()=>tab(i));
+$('go').onclick=()=>{persist();run();};
+$('city').onchange=()=>{const z=CITYZ[$('city').value];if(z)$('zone').value=z;updateTZ();persist();};
+$('zone').onchange=()=>{const c=$('city').value;if(c&&CITYZ[c]!==$('zone').value)$('city').value='';updateTZ();persist();};
+['bd','bt','tzon'].forEach(id=>$(id).addEventListener('change',()=>{updateTZ();persist();}));
+$('tu').onchange=()=>{$('bt').disabled=$('tu').checked;updateTZ();persist();};
+document.querySelectorAll('#f1 input,#f2 input,#f2 select,#fc input,#fc select').forEach(el=>el.addEventListener('change',persist));
+(function init(){$('dhtip').innerHTML=tipI('gen','l');fillTZ();let s=null;try{s=JSON.parse(localStorage.getItem('sadesati_v2'));}catch(e){}
+if(s){try{setState(s);return;}catch(e){}}
+setTheme(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+$('city').value='Москва';$('zone').value=CITYZ['Москва'];updateTZ();
+EV=[{from:'2003-09-01',to:'2008-06-30',desc:'Учёба в университете'},{from:'2010-05-20',to:'',desc:'Переезд'},{from:'2021-03-01',to:'2022-02-28',desc:'Сложный проект'}];tab(1,true);})();
+</script></body></html>
