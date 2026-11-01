@@ -1,3 +1,13 @@
+<div align="center">
+
+<a href="https://wadi-li.github.io/sade-sati-calculator/"><img src="https://img.shields.io/badge/ОТКРЫТЬ_КАЛЬКУЛЯТОР_САДЕ_САТИ-▶-D97706?style=for-the-badge&labelColor=78350F" alt="ОТКРЫТЬ КАЛЬКУЛЯТОР САДЕ САТИ" height="64"></a>
+
+### साढेसाती । शनिः इत्यस्य अर्थः मन्दगामी ।
+
+*Саде Сати. Шани — значит «медленный».*
+
+</div>
+
 # Калькулятор Саде Сати
 
 Офлайн-калькулятор периодов **Саде Сати** и **Шани Дхайи** (ведическая астрология, сидерический зодиак). Один HTML-файл без зависимостей: работает в браузере без интернета.
@@ -19,9 +29,9 @@
 
 ## Запуск
 
-Откройте `index.html` в любом современном браузере (Chrome, Edge, Firefox, Safari). Установка и интернет не нужны.
+Откройте [`index.html`](https://github.com/wadi-li/sade-sati-calculator/blob/main/index.html) в любом современном браузере (Chrome, Edge, Firefox, Safari). Установка и интернет не нужны.
 
-Онлайн-версия (после включения GitHub Pages): https://wadi-li.github.io/sade-sati-calculator/
+**[Открыть калькулятор Саде Сати](https://wadi-li.github.io/sade-sati-calculator/)** — онлайн-версия (`index.html`)
 
 ## Структура
 
